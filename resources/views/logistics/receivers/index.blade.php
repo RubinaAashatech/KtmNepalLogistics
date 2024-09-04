@@ -7,6 +7,7 @@
 <table class="table table-bordered">
     <thead>
         <tr>
+            <th>SN</th> 
             <th>Fullname</th>
             <th>Country</th>
             <th>State</th>
@@ -18,8 +19,9 @@
         </tr>
     </thead>
     <tbody>
-        @forelse($receivers as $receiver)
+        @forelse($receivers as $index => $receiver)
             <tr>
+                <td>{{ $index + 1 }}</td> 
                 <td>{{ $receiver['fullname'] }}</td>
                 <td>{{ $receiver['country'] }}</td>
                 <td>{{ $receiver['state'] }}</td>
@@ -31,7 +33,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="8">No receivers data found.</td>
+                <td colspan="9">No receivers data found.</td>
             </tr>
         @endforelse
     </tbody>

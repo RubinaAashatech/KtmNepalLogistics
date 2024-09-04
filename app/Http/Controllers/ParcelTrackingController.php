@@ -112,40 +112,43 @@ class ParcelTrackingController extends Controller
         }
     }
     
-    public function fetchTrackingUpdates()
-{
-    try {
-        $response = $this->parcelTrackingService->fetchData('tracking-updates');
-        Log::info("Tracking Updates API Response: " . print_r($response, true));
-        
-        if (isset($response['error'])) {
-            Log::error('API Error: ' . $response['error'] . ' Status Code: ' . ($response['status_code'] ?? 'N/A'));
-            return response()->json(['error' => 'Failed to fetch tracking updates.'], 500);
+        public function fetchTrackingUpdates()
+    {
+        try {
+            $trackingUpdates = $this->parcelTrackingService->fetchData('tracking-updates');
+            if (is_array($trackingUpdates) && !empty($trackingUpdates)) {
+                return view('logistics.tracking-updates.index', ['trackingUpdates' => $trackingUpdates]);
+            } else {
+                return view('logistics.tracking-updates.index', ['trackingUpdates' => []]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while fetching tracking updates.'], 500);
         }
-
-        // Ensure response data is correctly processed
-        $trackingupdates = is_array($response) ? $response : [];
-
-        return view('logistics.tracking-updates.index', ['trackingupdates' => $trackingupdates]);
-    } catch (\Exception $e) {
-        Log::error('Error fetching tracking updates: ' . $e->getMessage());
-        return response()->json(['error' => 'An error occurred while fetching tracking updates.'], 500);
     }
-}
-
 
     public function fetchParcelHistories()
-{
-    try {
-        $response = $this->parcelTrackingService->fetchData('parcel-histories');
-        if (is_array($response) && !empty($response)) {
-            $parcelhistories = $response;
-        } else {
-            $parcelhistories = [];
+    {
+        try {
+            $parcelHistories = $this->parcelTrackingService->fetchData('parcel-histories');
+            $parcels = $this->parcelTrackingService->fetchData('parcels');
+
+            $parcelIndex = [];
+            foreach ($parcels as $parcel) {
+                $parcelIndex[$parcel['id']] = $parcel;
+            }
+            foreach ($parcelHistories as &$history) {
+                if (isset($history['latest_tracking_update'])) {
+                    $parcelId = $history['latest_tracking_update']['parcel_id'];
+                    $history['parcel'] = $parcelIndex[$parcelId] ?? [];
+                } else {
+                    $history['parcel'] = [];
+                }
+            }
+
+            return view('logistics.parcel-histories.index', ['parcelHistories' => $parcelHistories]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while fetching parcel histories.'], 500);
         }
-        return view('logistics.parcel-histories.index', ['parcelhistories' => $parcelhistories]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'An error occurred while fetching parcel histories.'], 500);
     }
-}
+
 }    

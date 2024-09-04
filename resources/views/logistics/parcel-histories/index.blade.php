@@ -6,7 +6,8 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Parcel ID</th>
+                <th>SN</th> 
+                {{-- <th>Parcel ID</th> --}}
                 <th>Tracking Number</th>
                 <th>Carrier</th>
                 <th>Current Status</th>
@@ -16,15 +17,16 @@
             </tr>
         </thead>
         <tbody>
-             @foreach($parcelhistories as $history)
+             @foreach($parcelHistories as $index =>  $history)
                 <tr>
-                    <td>{{ $history['parcel']['parcel_id'] ?? 'N/A' }}</td>
-                    <td>{{ $history['parcel']['tracking_number'] ?? 'N/A' }}</td>
-                    <td>{{ $history['parcel']['carrier'] ?? 'N/A' }}</td>
-                    <td>{{ $history['current_status'] ?? 'N/A' }}</td>
-                    <td>{{ $history['current_location'] ?? 'N/A' }}</td>
-                    <td>{{ $history['parcel']['description'] ?? 'N/A' }}</td>
-                    <td>{{ isset($history['last_update']) ? \Carbon\Carbon::parse($history['last_update'])->format('Y-m-d H:i:s') : 'N/A' }}</td>
+                    <td>{{ $index + 1 }}</td>
+                    {{-- <td>{{ $history['id'] ?? 'N/A' }}</td> --}}
+                    <td>{{ $history['tracking_number'] ?? 'N/A' }}</td>
+                    <td>{{ $history['carrier'] ?? 'N/A' }}</td>
+                    <td>{{ $history['latest_tracking_update']['status'] ?? 'N/A' }}</td>
+                    <td>{{ $history['latest_tracking_update']['location'] ?? 'N/A' }}</td>
+                    <td>{{ $history['description'] ?? 'N/A' }}</td>
+                    <td>{{ isset($history['latest_tracking_update']['created_at']) ? \Carbon\Carbon::parse($history['latest_tracking_update']['created_at'])->format('Y-m-d') : 'N/A' }}</td>
                 </tr>
             @endforeach
         </tbody>

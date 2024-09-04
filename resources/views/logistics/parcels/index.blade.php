@@ -7,6 +7,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
+                <th>SN</th> 
                 <th>Tracking Number</th>
                 <th>Customer</th>
                 <th>Receiver</th>
@@ -23,8 +24,9 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($parcels as $parcel)
+            @forelse($parcels as $index =>  $parcel)
                 <tr>
+                    <td>{{ $index + 1 }}</td>
                     <td>{{ $parcel['tracking_number'] ?? 'N/A' }}</td>
                     <td>{{ $parcel['customer']['fullname'] ?? 'N/A' }}</td>
                     <td>{{ $parcel['receiver']['fullname'] ?? 'N/A' }}</td>
